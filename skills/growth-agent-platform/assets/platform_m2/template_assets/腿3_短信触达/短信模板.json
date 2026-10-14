@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "sign": "【甲方公司】",
+  "note": "短信须以甲方企业名报备签名；含退订指令；频控见《退订频控清单》。AI 不参与文案生成，文案由甲方确认。占位示例，接真实客户时替换。",
+  "templates": [
+    {
+      "id": "t_intro",
+      "type": "营销",
+      "content": "【甲方公司】{name}您好，我司XX工业耗材适配多种工况，可寄样测试。详询{phone}。回复T退订",
+      "vars": ["name", "phone"]
+    },
+    {
+      "id": "t_follow",
+      "type": "跟进",
+      "content": "【甲方公司】{name}您好，上次沟通的耗材需求，方便时回电{phone}详谈。回复T退订",
+      "vars": ["name", "phone"]
+    },
+    {
+      "id": "t_event",
+      "type": "活动",
+      "content": "【甲方公司】{name}您好，我司本月样品试用开放，欢迎预约。详询{phone}。回复T退订",
+      "vars": ["name", "phone"]
+    }
+  ]
+}

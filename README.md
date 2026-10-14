@@ -8,7 +8,7 @@
 ## 能力展示
 - 一人销售公司的「四部门管理法」（获客 / 转化 / 交付 / 沉淀）
 - 通用技能模板（全部脱敏，不含任何客户与商业机密）
-- **成长型 Agent 平台**：把「单客户 Agent」升级为「多租户量产接入」模板（配置化 / 插件热插拔 / 多租户看板 / Agent 联网协作 / 明账+防跳单，M1–M5 全链路，零依赖自包含；v1.1.0 起支持 `--tenant` 单租户交付看板）→ [skills/growth-agent-platform](skills/growth-agent-platform/SKILL.md)
+- **成长型 Agent 平台**：把「单客户 Agent」升级为「多租户量产接入」模板（配置化 / 插件热插拔 / 多租户看板 / Agent 联网协作 / 明账+防跳单，M1–M5 全链路，零依赖自包含；v1.1 起支持 `--tenant` 单租户交付看板，含交付话术与实测记录）→ [skills/growth-agent-platform](skills/growth-agent-platform/SKILL.md)
 - 文本 / 报表处理类通用工具脚本
 - 心智工坊：把经验结构化沉淀的模板
 

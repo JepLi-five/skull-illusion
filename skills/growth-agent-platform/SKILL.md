@@ -1,6 +1,6 @@
 # growth-agent-platform · 成长型 Agent 平台（多租户量产模板）
 
-> version: 1.1.0
+> version: 1.1.1
 
 ## 做什么
 把"为单个客户做的 Agent"固化成**可量产接入新客户**的成长型平台模板：配置化 + 插件热插拔 + 多租户聚合看板 + Agent 联网协作 + 明账账本 + 防跳单闸门。内置 M1–M5 全链路与一键接入脚本，**自包含、开箱即跑**（契约层与演示资产均已内置，无需外部客户包）。
@@ -27,6 +27,7 @@ python run_m4_transport.py
 # 4) 出该客户自己的看板（只含该客户数据，可当面交付给客户）
 python 单租户看板.py --tenant profile_003 --out 看板.html
 ```
+交付话术要点与真实客户实测记录见 `assets/platform_m2/接入手册.md` 第四、五节。
 接入细节见 `assets/platform_m2/接入手册.md`。
 
 ## 能力（里程碑）

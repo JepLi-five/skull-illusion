@@ -23,4 +23,4 @@ skills/
 | 技能 | 一句话 | 版本 |
 |---|---|---|
 | [redline-scan](redline-scan/SKILL.md) | 红线 / 敏感信息扫描器（外发前最后一道闸） | — |
-| [growth-agent-platform](growth-agent-platform/SKILL.md) | 成长型 Agent 平台：多租户量产接入模板（M1–M5 全链路，自包含开箱即跑） | 1.0.0 |
+| [growth-agent-platform](growth-agent-platform/SKILL.md) | 成长型 Agent 平台：多租户量产接入模板（M1–M5 全链路 + 单租户交付看板，自包含开箱即跑） | 1.1.0 |

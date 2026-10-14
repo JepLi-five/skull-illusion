@@ -1,6 +1,6 @@
 # growth-agent-platform · 成长型 Agent 平台（多租户量产模板）
 
-> version: 1.0.0
+> version: 1.1.0
 
 ## 做什么
 把"为单个客户做的 Agent"固化成**可量产接入新客户**的成长型平台模板：配置化 + 插件热插拔 + 多租户聚合看板 + Agent 联网协作 + 明账账本 + 防跳单闸门。内置 M1–M5 全链路与一键接入脚本，**自包含、开箱即跑**（契约层与演示资产均已内置，无需外部客户包）。
@@ -23,6 +23,9 @@ python onboard_client.py --id profile_003 --company "某某新材料" --industry
 
 # 3) 再跑一次，新客户自动并入多租户看板
 python run_m4_transport.py
+
+# 4) 出该客户自己的看板（只含该客户数据，可当面交付给客户）
+python 单租户看板.py --tenant profile_003 --out 看板.html
 ```
 接入细节见 `assets/platform_m2/接入手册.md`。
 
@@ -33,6 +36,7 @@ python run_m4_transport.py
 - **M4 Agent 联网**：获客/转化/交付/沉淀四 Agent 经**真实 A2A(HTTP)** 协作（对齐 A2A 信封，零依赖）。
 - **M5 明账 + 防跳单**：双时态流水账 + 留痕/排他期/跳单嫌疑自动告警。
 - **量产接入**：`onboard_client.py` + `tenants/registry.json`。
+- **客户交付**：`单租户看板.py --tenant <id>` 产出只含该客户自身数据的看板（三腿 KPI + 线索分布 + 明账明细 + 防跳单提醒 + 数据主权声明），严格 `tenant_id` 双保险过滤，跨租户泄漏 0 处，可当面交付客户本人。
 
 ## 红线（公开承诺）
 - 客户数据主权归客户；核心资产（主表 / 评分引擎 / 采集管线）**永不出门**，包内仅保留 ≤10 行脱敏占位样例。

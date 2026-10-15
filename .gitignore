@@ -16,9 +16,7 @@
 *账本*
 *合同*
 *订单*
-# 内部私有身份 / 知识库 / 架构
-博学库/
-球球知识库/
-SOUL.md
-IDENTITY.md
-USER.md
+# 内部私有资产（不公开的一切，一律排除）
+_private/
+internal/
+*.private.md

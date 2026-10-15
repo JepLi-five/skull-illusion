@@ -5,6 +5,15 @@
 ## 它是什么
 骷髅幻戏不是某个具体软件，是一颗**种子（模式）**：一套能反复长出的协作契约与技能骨架。它把单人公司最痛的三件事——获客、转化、交付——用可继承、可随身带、可自动执行的系统接管起来。
 
+## 从哪开始（3 步跑通）
+```bash
+git clone https://github.com/JepLi-five/skull-illusion.git
+cd skull-illusion/skills/growth-agent-platform/assets/platform_m2
+python run_m4_transport.py        # 开箱跑通 M2–M5：A2A 协作 + 明账/防跳单 + 聚合看板
+```
+- 接自己的第一个客户：`python onboard_client.py --id profile_003 --company "某某新材料" ...`（参数见下方 SKILL.md）
+- 公开前先自检一遍：`python ../../redline-scan/scan.py .`
+
 ## 能力展示
 - 一人销售公司的「四部门管理法」（获客 / 转化 / 交付 / 沉淀）
 - 通用技能模板（全部脱敏，不含任何客户与商业机密）
@@ -13,15 +22,24 @@
 - 心智工坊：把经验结构化沉淀的模板
 
 ## 仓库结构
-- `skills/` 干净、可复用的技能模板
-- `tools/` 通用工具脚本
-- `docs/` 方法论文档
+```
+skull-illusion/
+├── README.md · LICENSE · .gitignore
+├── docs/                          方法论：四部门管理法 · 心智工坊模板
+├── skills/
+│   ├── growth-agent-platform/     ★ 主力：M1–M5 全链路多租户平台
+│   │   └── assets/platform_m2/    （agents / core / plugins / 看板 / 接入手册）
+│   └── redline-scan/              红线扫描器（公开前自检）
+└── tools/                         通用脚本（CSV → Markdown 报表等）
+```
 
 ## 红线（公开承诺）
 本仓库**绝不包含**任何客户数据、密钥、订单账本、合同、内部架构。所有内容均经脱敏，可安全公开。
+公开前自检：`python skills/redline-scan/scan.py .`
 
-## 业务合作
-如有用漆 / 居间业务合作意向，请联系 [占位：子羿邮箱 / 微信]。
+## 业务合作 / 交流
+请走 **GitHub Discussions / Issues**（公开、可沉淀、不留私人联系方式）：
+https://github.com/JepLi-five/skull-illusion/discussions
 
 ## License
 MIT（代码） / CC-BY 4.0（文档）

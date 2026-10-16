@@ -15,6 +15,7 @@
 """
 
 import os
+import re
 import csv
 import html
 import json
@@ -70,6 +71,32 @@ def load_events(tid):
     return agg
 
 
+def region_key(s):
+    """把地区字段聚合成「县级」单位，让区域分布图有意义。
+
+    两种常见写法一并处理：
+      · 「示例县·某镇某村」→ 先按分隔符取前段 → 再取最具体行政单位 → 「示例县」
+      · 「示例市A区」      → 贪婪取到最后一个行政字 → 「示例市A区」（不能吞成「示例市」）
+    兜底：无行政后缀时保留原值；整段被吞（>12 字）时退回第一个行政单位。
+    """
+    s = (s or "").strip()
+    if not s:
+        return s
+    for sep in ("·", "、", "/"):
+        if sep in s:
+            s = s.split(sep)[0].strip()
+            break
+    m = re.match(r"^(.*[市县区旗])", s)
+    if m:
+        r = m.group(1)
+        if len(r) > 12:  # 防御：吞掉整句时退回首个行政单位
+            m2 = re.match(r"^(.*?[市县区旗])", s)
+            r = m2.group(1) if m2 else r
+        return r
+    m3 = re.match(r"^(.*?[镇乡])", s)
+    return (m3.group(1) if m3 else s) or s
+
+
 def load_staging(path):
     if not path or not os.path.exists(path):
         return [], Counter(), Counter()
@@ -78,7 +105,7 @@ def load_staging(path):
         for r in csv.DictReader(f):
             rows.append(r)
     tiers = Counter((r.get("评分档位") or "").strip() for r in rows)
-    regions = Counter((r.get("地区") or "").strip() for r in rows)
+    regions = Counter(region_key(r.get("地区")) for r in rows)
     return rows, tiers, regions
 
 
@@ -196,6 +223,24 @@ th{color:var(--muted);font-weight:600;} td.num{text-align:right;font-variant-num
     L.append(bars(tiers, order=["P0", "P1", "P2", "P3"]))
     L.append('<div style="margin-top:10px;font-size:13px;font-weight:700;color:var(--primary)">区域分布 Top</div>')
     L.append(bars(regions))
+
+    # 本期线索明细（客户最想看的：到底捞上来哪些厂）
+    if rows:
+        L.append('<div style="margin-top:14px;font-size:13px;font-weight:700;color:var(--primary)">'
+                 '本期线索明细（共 %d 家）</div>' % len(rows))
+        L.append('<table style="margin-top:6px"><tr><th>企业名称</th><th>地区</th>'
+                 '<th>档位</th><th>需求信号</th><th>公开联系方式</th></tr>')
+        for r in rows[:20]:
+            L.append('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (
+                html.escape((r.get("企业名称") or "").strip()),
+                html.escape(region_key(r.get("地区"))),
+                html.escape((r.get("评分档位") or "").strip()),
+                html.escape((r.get("需求信号") or "").strip()[:28]),
+                html.escape((r.get("电话") or "").strip()[:22]),
+            ))
+        L.append('</table>')
+        L.append('<div class="note">以上联系方式均为公开渠道（官网 / 黄页 / 公示）取得，'
+                 '由贵司自行合规触达。</div>')
     L.append('</section>')
 
     # 明账

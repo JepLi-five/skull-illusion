@@ -1,0 +1,27 @@
+# 依赖
+node_modules/
+web/node_modules/
+.pnp/
+
+# 密钥（真实值绝不入库）
+.env
+.env.local
+config/.env
+
+# 数据库（本地生成）
+data/*.db
+data/*.db-journal
+*.sqlite
+
+# Goose 二进制（下载，不入库）
+tools/goose/
+
+# 构建产物
+web/.next/
+web/out/
+dist/
+build/
+
+# 系统
+.DS_Store
+Thumbs.db

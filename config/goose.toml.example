@@ -1,0 +1,26 @@
+# Goose 配置样例（私有平台 LLM 适配层）
+# 用法：复制到 Windows %APPDATA%\goose\config.toml
+# 密钥走环境变量，不写明文。DeepSeek 兼容 OpenAI 协议。
+#
+# 说明：Goose v1.55 配置以 [model] 指定默认 provider/model，
+# 各 provider 细节在 [providers.<name>] 中。DeepSeek 用 openai 兼容端点。
+
+[model]
+provider = "openai"
+model = "deepseek-chat"
+api_key = "${DEEPSEEK_API_KEY}"
+
+[providers.openai]
+base_url = "https://api.deepseek.com/v1"
+
+# 轻活/离线兜底：本地小模型（Ollama 或其他本地 OpenAI 兼容端点）
+# [providers.ollama]
+# base_url = "http://localhost:11434/v1"
+# api_key = "ollama"
+
+[session]
+auto_compact = true
+compact_threshold = 0.8
+
+[tools]
+builtin = ["read", "write", "edit", "glob", "grep", "task", "shell"]

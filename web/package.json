@@ -1,0 +1,21 @@
+{
+  "name": "skull-illusion-web",
+  "version": "0.0.1",
+  "private": true,
+  "description": "骷髅幻戏私有平台 · 内部看板 + 外部门户（Next.js）",
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0 -p 3000",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p 3000"
+  },
+  "dependencies": {
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "typescript": "^5.5.0"
+  }
+}

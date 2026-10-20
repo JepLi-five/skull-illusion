@@ -1,0 +1,15 @@
+{
+  "name": "engine",
+  "version": "1.0.0",
+  "description": "> 这里是\"骷髅幻戏\"与 Goose（harness 底座）的接缝。我们**不写底层 agent loop**，而是： > 1. 用 Goose 跑通用 agent 能力（工具调用、MCP、上下文管理）； > 2. 在它外面用我们自己的代码包\"四部门逻辑 / 私有大脑 / 品牌壳\"——这是差异化、主权所在。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1"
+  }
+}

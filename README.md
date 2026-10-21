@@ -51,6 +51,8 @@ skull-illusion/
 │   ├── score.py            # 评分引擎（权重/阈值可调，可审计）
 │   ├── ingest.py           # 主表只读导入 → 打分 → 落库
 │   ├── pipeline.py         # 四部门流转状态机（SLA/逾期/复盘）
+│   ├── daily_report.py      # 每日复盘日报（逾期/到期/在办，供自动化）
+│   └── backup.py           # 一致性备份（SQLite backup API，轮转保留）
 │   └── mcp_proof.mjs        # 最小端到端证明：harness + MCP + LLM
 ├── web/
 │   ├── dash-server.mjs     # 内部看板（零依赖，口令保护）
@@ -85,7 +87,13 @@ python engine/pipeline.py add --name "某某机械厂" --signals "强需求,已�
 python engine/pipeline.py advance 1 convert
 python engine/pipeline.py score          # 给未打分线索补分（含门户提交）
 python engine/pipeline.py digest         # 复盘摘要
+python engine/daily_report.py 3          # 每日日报：逾期 + 3天内到期 + 四部门在办
+
+# 6) 备份（防丢，建议每日定时）
+BACKUP_DIR=/你的备份盘或U盘路径 python engine/backup.py
 ```
+
+**备份**用 SQLite 官方 backup API 做一致性拷贝（非裸 copy），生成 `skull_<时间戳>.db`，默认保留最近 7 份（`BACKUP_KEEP` 可调），并自动校验客户数非 0。备份目录默认 `backups/`，已 gitignore。
 
 依赖极少：看板与门户**只用 Node 内置模块**（`http` + `node:sqlite`），不装任何 npm 包；数据层只用 Python 标准库 + `openpyxl`。
 

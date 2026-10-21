@@ -13,6 +13,9 @@ data/*.db
 data/*.db-journal
 *.sqlite
 
+# 备份产物（本地生成，绝不入库）
+backups/
+
 # Goose 二进制（下载，不入库）
 tools/goose/
 

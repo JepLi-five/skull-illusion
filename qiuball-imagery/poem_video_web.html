@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>球球·心象 · 诗词歌赋动图生成器</title>
+<style>
+  :root{
+    --bg:#0a0e1a; --panel:rgba(20,28,48,.72); --line:rgba(120,200,255,.18);
+    --cyan:#5fd0ff; --gold:#ffd479; --txt:#dfe8ff; --sub:#8da3c7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:radial-gradient(1200px 700px at 70% -10%,rgba(95,208,255,.12),transparent),
+               radial-gradient(900px 600px at 10% 110%,rgba(255,212,121,.10),transparent),
+               var(--bg);color:var(--txt);min-height:100vh;padding:28px 18px 60px}
+  .wrap{max-width:980px;margin:0 auto}
+  header{text-align:center;margin-bottom:26px}
+  h1{font-size:30px;letter-spacing:2px;
+    background:linear-gradient(90deg,var(--cyan),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--sub);margin-top:8px;font-size:14px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:20px;margin-bottom:20px;backdrop-filter:blur(8px);box-shadow:0 8px 40px rgba(0,0,0,.35)}
+  .row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:12px}
+  label{font-size:13px;color:var(--sub)}
+  select,textarea,button{font-family:inherit}
+  select{background:#0e1530;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px}
+  textarea{width:100%;min-height:130px;background:#0e1530;color:var(--txt);border:1px solid var(--line);
+    border-radius:10px;padding:12px;font-size:15px;line-height:1.7;resize:vertical}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg button{background:transparent;color:var(--sub);border:none;padding:9px 18px;cursor:pointer;font-size:14px}
+  .seg button.on{background:linear-gradient(90deg,rgba(95,208,255,.25),rgba(255,212,121,.22));color:#fff}
+  .btn{cursor:pointer;border:none;border-radius:10px;padding:11px 22px;font-size:15px;font-weight:600;
+    background:linear-gradient(90deg,var(--cyan),var(--gold));color:#06101f;transition:.2s}
+  .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+  .budget{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+  .chip{background:#0e1530;border:1px solid var(--line);border-radius:10px;padding:10px 16px;font-size:13px}
+  .chip b{color:var(--gold);font-size:16px}
+  .shot{border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;
+    background:linear-gradient(180deg,rgba(95,208,255,.05),rgba(255,212,121,.03))}
+  .shot h3{font-size:15px;color:var(--cyan);margin-bottom:6px}
+  .shot .line{color:var(--gold);font-size:15px;margin-bottom:8px;font-style:italic}
+  .shot .anchor{color:var(--sub);font-size:13px;margin-bottom:8px}
+  .shot code{display:block;background:#070c1c;border:1px solid var(--line);border-radius:9px;
+    padding:10px 12px;font-size:12.5px;color:#bfe3ff;line-height:1.6;word-break:break-word;font-family:"SFMono-Regular",Consolas,monospace}
+  .narbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px}
+  .narbar textarea{min-height:60px;font-size:14px}
+  .note{font-size:12.5px;color:var(--sub);line-height:1.7;border-left:3px solid var(--gold);padding-left:12px;margin-top:8px}
+  .hidden{display:none}
+  footer{text-align:center;color:var(--sub);font-size:12px;margin-top:30px;opacity:.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>球球·心象 · 诗词歌赋动图生成器</h1>
+    <div class="sub">选模板 或 任意填写诗词赋 → 抽意境锚点 → 任选【图片/动图/视频】出 prompt + 朗诵试听 + 积分预算 · 画面由球球接手生成</div>
+  </header>
+
+  <div class="panel">
+    <div class="row">
+      <label>① 选模板（自动填入下方，可任意改）</label>
+      <select id="preset"></select>
+    </div>
+    <label style="display:block;margin-bottom:8px">② 填写 / 粘贴任意诗词歌赋（位置在此，始终可编辑）</label>
+    <textarea id="freeText" placeholder="可直接在下方输入或粘贴任意诗词/赋，多首用空行分隔；例如：&#10;山，快马加鞭未下鞍。惊回首，离天三尺三。"></textarea>
+    <div class="row" style="margin-top:14px">
+      <label>③ 产出形态（图片 / 动图 / 视频，任选）</label>
+      <div class="seg" id="formType">
+        <button data-f="视频" class="on">🎬 视频</button>
+        <button data-f="动图">🎞 动图</button>
+        <button data-f="图片">🖼 图片</button>
+      </div>
+    </div>
+    <div class="row" id="modeRow" style="margin-top:14px">
+      <label>④ 出片模式（仅视频）</label>
+      <div class="seg" id="mode">
+        <button data-m="乙" class="on">乙 · 全镜头成片</button>
+        <button data-m="甲">甲 · 镇楼单镜</button>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn" id="gen">⚡ 生成分镜 + 试听</button>
+      <button class="btn ghost" id="export">⬇ 导出 prompt 任务单</button>
+    </div>
+    <div class="note">提示：选了模板后，下方文本框会自动填充原文，你可在此基础上任意增删、或清空自己写。改过文本框即切到「自由翻译」；不改则走保真精选分镜。</div>
+  </div>
+
+  <div class="panel hidden" id="result">
+    <div class="budget" id="budget"></div>
+    <div id="shots" style="margin-top:16px"></div>
+    <div class="shot" id="narPanel">
+      <h3>🎙 朗诵试听（浏览器原生中文语音，免费）</h3>
+      <div class="narbar">
+        <textarea id="narrText"></textarea>
+        <button class="btn ghost" id="play">▶ 朗读</button>
+        <button class="btn ghost" id="stop">⏹ 停止</button>
+      </div>
+      <div class="note">提示：浏览器原生 TTS 仅供试听与校对意境；正式成片由球球用云端音色混音生成 MP4。</div>
+    </div>
+    <div class="note" id="handoff"></div>
+  </div>
+
+  <footer>球球·心象 出品 · 诗词→动图生成器内核 v2 · 纯前端单文件 · 视频生成接口预留球球接手 · 球球·心象 生成</footer>
+</div>
+
+<script>
+// ---------- 精选预设（人工意境锚点，质量保真；原文经公版底本核验） ----------
+const PRESETS = {
+  "十六字令三首·毛泽东": {
+    text: "山，快马加鞭未下鞍。惊回首，离天三尺三。\n山，倒海翻江卷巨澜。奔腾急，万马战犹酣。\n山，刺破青天锷未残。天欲堕，赖以拄其间。",
+    narr: "山，快马加鞭未下鞍。惊回首，离天三尺三。山，倒海翻江卷巨澜。奔腾急，万马战犹酣。山，刺破青天锷未残。天欲堕，赖以拄其间。",
+    shots: [
+      {line:"山，快马加鞭未下鞍。惊回首，离天三尺三。", prompt:"A towering jagged mountain peak piercing a sea of clouds just beneath the heavens, a lone red-cloaked rider spurring a horse at breakneck speed along a narrow cliff path, dizzying vertical perspective looking up, wind tearing through mist, epic cinematic, golden dawn light, 8k, hyper-detailed", anchor:"主体=险峰+红衣骑者；气势=险绝；光影=破晓金光；镜头=仰拍近天", impact:3},
+      {line:"山，倒海翻江卷巨澜。奔腾急，万马战犹酣。", prompt:"Vast rolling mountain ranges surging like enormous ocean waves and raging rivers, thousands of galloping horses charge through the valleys as if in fierce battle, dynamic wide shot, dramatic storm light, dust and motion blur, cinematic epic scale, 8k", anchor:"群山+万马；磅礴如战场；风暴戏剧光；大全景俯瞰", impact:3},
+      {line:"山，刺破青天锷未残。天欲堕，赖以拄其间。", prompt:"A colossal mountain peak shaped like a giant unsheathed sword stabbing through the azure sky, its blade edge sharp and unbroken, the crumbling heavens leaning yet held up by the mountain as a pillar, low-angle heroic shot, divine golden light rays, apocalyptic yet majestic, cinematic 8k, hyper-detailed", anchor:"如剑山峰+将倾苍穹；刚毅擎天；神性金光；低角度英雄", impact:5}
+    ]
+  },
+  "洛神赋·曹植（节选）": {
+    text: "其形也，翩若惊鸿，婉若游龙。髣髴兮若轻云之蔽月，飘飖兮若流风之回雪。远而望之，皎若太阳升朝霞；迫而察之，灼若芙蕖出渌波。凌波微步，罗袜生尘。忽不悟其所舍，怅神宵而蔽光。",
+    narr: "翩若惊鸿，婉若游龙。髣髴兮若轻云之蔽月，飘飖兮若流风之回雪。凌波微步，罗袜生尘。",
+    shots: [
+      {line:"翩若惊鸿，婉若游龙…灼若芙蕖出渌波。", prompt:"An ethereal goddess of the Luo River materializing from shimmering mist above tranquil water at dawn, her form graceful as a startled swan and sinuous as a wandering dragon, light gauze robes drifting like clouds veiling the moon, soft pink-and-gold morning light, slow cinematic push-in, dreamy and majestic, 8k, hyper-detailed", anchor:"洛神+洛水晨雾；惊鸿游龙之柔逸；朝霞粉金；缓慢推近", impact:3},
+      {line:"凌波微步，罗袜生尘…若往若还。", prompt:"The Luo River goddess stepping lightly across the water's surface, slender feet leaving faint trails of mist like dust above the ripples, flowing robes, shimmering reflection below, serene wide shot, cool jade-and-silver light, gentle camera glide, elegant and weightless, 8k, hyper-detailed", anchor:"洛神+水面微步+罗袜生尘；轻盈若危若安；玉波银辉；横移跟拍", impact:2},
+      {line:"忽不悟其所舍，怅神宵而蔽光。", prompt:"The Luo River goddess fading into luminous morning haze as she departs, looking back with melancholy grace, a lone mortal poet standing on the riverbank gazing after her, longing and loss in the air, soft golden farewell light, slow pull-back, poignant and cinematic, 8k, hyper-detailed", anchor:"洛神隐去、神光蔽失+岸上怅望的诗人；人神殊途之怅；告别金光；缓慢拉远", impact:2}
+    ]
+  },
+  "念奴娇·赤壁怀古·苏轼（节选）": {
+    text: "大江东去，浪淘尽，千古风流人物。故垒西边，人道是，三国周郎赤壁。乱石穿空，惊涛拍岸，卷起千堆雪。",
+    narr: "大江东去，浪淘尽，千古风流人物。乱石穿空，惊涛拍岸，卷起千堆雪。",
+    shots: [
+      {line:"大江东去，浪淘尽，千古风流人物。", prompt:"a vast roaring river flowing eastward into infinity, time washing away countless heroes of ages past, epic wide shot, cold golden dusk light, cinematic 8k, hyper-detailed", anchor:"大江东去；历史苍茫；黄昏冷金；大全景", impact:2},
+      {line:"乱石穿空，惊涛拍岸，卷起千堆雪。", prompt:"jagged rocks piercing the sky, terrifying waves crashing against the cliff, thousands of snow-white sprays erupting, dynamic low wide shot, dramatic storm light, cinematic 8k, hyper-detailed", anchor:"乱石惊涛+千堆雪；磅礴；风暴光；低角度", impact:2}
+    ]
+  }
+};
+const CUSTOM = "__custom__";
+
+// ---------- 自由模式：刚健意象字典（山水豪放类最佳） + fallback ----------
+const VISION = {
+  "山":["a towering mountain peak","majestic and immovable","epic cinematic light","low-angle heroic shot"],
+  "峰":["a jagged mountain peak","razor-edged","golden dawn light","low-angle heroic shot"],
+  "岭":["rolling mountain ranges","vast and endless","soft horizon light","wide establishing shot"],
+  "马":["a galloping horse","breakneck speed","wind-torn mist","dynamic tracking shot"],
+  "骑":["a lone rider on horseback","spurring forward","wind-torn mist","dynamic tracking shot"],
+  "天":["the looming azure sky","vast heavens","divine light rays","upward tilt"],
+  "云":["a churning sea of clouds","roiling","soft glow","wide shot"],
+  "风":["howling wind","tearing through","dramatic storm light","whip-pan"],
+  "浪":["raging ocean waves","surging","foam and spray","low wide shot"],
+  "江":["a torrential river","rushing","cold reflection","follow shot"],
+  "河":["a rushing river","torrential","cold sheen","follow shot"],
+  "海":["a boundless ocean","endless","horizon light","wide shot"],
+  "水":["flowing water","gentle current","reflective sheen","top-down glide"],
+  "潮":["a surging tide","powerful","foam and spray","low wide shot"],
+  "雪":["falling snow","quiet blanket","soft blue light","slow aerial"],
+  "松":["an ancient pine","weathered","dappled light","low angle"],
+  "鹤":["a flying crane","graceful","soft dawn light","slow follow"],
+  "石":["towering jagged rocks","stark","dramatic light","low angle"],
+  "月":["a luminous full moon","serene","cool silver glow","slow push-in"]
+};
+const IMPACT = {"石":2,"剑":3,"刺":3,"战":3,"天":2,"万":2,"峰":2,"浪":2,"海":1,"雪":1,"月":1,"松":1,"潮":1};
+const FALLBACK = {prompt:"a poetic classical Chinese scene, elegant and atmospheric, cinematic 8k, hyper-detailed", anchor:"未匹配刚健意象字典，建议选精选模板或人工优化 prompt", impact:0};
+
+const COST_MIN=50, COST_MAX=100;
+const IMG_COST="5–10 积分（单张文生图）";
+const CLIP_COST=`${COST_MIN}–${COST_MAX} 积分（单镜 5 秒动图）`;
+
+// ---------- UI 逻辑 ----------
+const $ = s=>document.querySelector(s);
+const presetSel=$("#preset"), freeText=$("#freeText");
+let usePreset=true, curMode="乙", formType="视频";
+
+function fillPresets(){
+  presetSel.innerHTML="";
+  const c=document.createElement("option"); c.value=CUSTOM; c.textContent="✎ 自定义 · 空白（自己在下方写）"; presetSel.appendChild(c);
+  Object.keys(PRESETS).forEach(k=>{ const o=document.createElement("option"); o.value=k; o.textContent=k; presetSel.appendChild(o); });
+}
+function setMode(m){ document.querySelectorAll("#mode button").forEach(b=>b.classList.toggle("on",b.dataset.m===m)); }
+document.querySelectorAll("#mode button").forEach(b=>b.onclick=()=>{curMode=b.dataset.m;setMode(curMode);});
+// 产出形态切换：仅视频模式显示「出片模式」与「朗诵试听」
+function setForm(f){
+  document.querySelectorAll("#formType button").forEach(b=>b.classList.toggle("on",b.dataset.f===f));
+  formType=f;
+  const isVideo=(f==="视频");
+  const mr=document.getElementById("modeRow"); if(mr) mr.style.display=isVideo?"":"none";
+  const np=document.getElementById("narPanel"); if(np) np.style.display=isVideo?"":"none";
+}
+document.querySelectorAll("#formType button").forEach(b=>b.onclick=()=>setForm(b.dataset.f));
+
+presetSel.onchange=()=>{
+  if(presetSel.value===CUSTOM){ freeText.value=""; usePreset=false; }
+  else { freeText.value=PRESETS[presetSel.value].text; usePreset=true; }
+};
+freeText.oninput=()=>{ usePreset=false; }; // 用户改动即切自由翻译
+
+function splitUnits(poem){
+  if(/\n/.test(poem)) return poem.split("\n").map(s=>s.trim()).filter(Boolean);
+  return poem.split(/[。；;！!？?]/).map(s=>s.trim()).filter(Boolean);
+}
+function translate(unit){
+  let subj=[],mood=[],light=[],shot=[];
+  for(const ch in VISION){ if(unit.includes(ch)){ const v=VISION[ch]; subj.push(v[0]);mood.push(v[1]);light.push(v[2]);shot.push(v[3]); } }
+  if(!subj.length) return {...FALLBACK, line:unit};
+  return {
+    line:unit,
+    prompt:`${[...new Set(subj)].join(", ")}, ${[...new Set(mood)].join(", ")}, ${[...new Set(light)].join(", ")}, ${shot[0]}, cinematic 8k, hyper-detailed`,
+    anchor:`自动字典匹配：${[...new Set(subj)].join(" / ")}`,
+    impact:[...unit].reduce((s,c)=>s+(IMPACT[c]||0),0)
+  };
+}
+
+function getData(){
+  if(usePreset && presetSel.value!==CUSTOM){
+    const p=PRESETS[presetSel.value];
+    return {narr:p.narr, shots:p.shots.slice()};
+  }
+  const units=splitUnits(freeText.value);
+  if(!units.length){ alert("请先在下方填写或粘贴诗词/赋。"); throw 0; }
+  const shots=units.map(translate);
+  return {narr:freeText.value.replace(/\n/g,""), shots};
+}
+
+function render(){
+  const imageify=(p)=>p.replace(/cinematic 8k, hyper-detailed\s*$/,"static cinematic still image, masterpiece painting, 8k");
+  const bestShot=(arr)=>arr.reduce((a,b)=>(b.impact||0)>(a.impact||0)?b:a);
+  let data; try{ data=getData(); }catch(e){ return; }
+  const all=data.shots;
+  let shots, cost;
+
+  if(formType==="图片"){
+    const b=bestShot(all);
+    shots=[Object.assign({},b,{prompt:imageify(b.prompt)})];
+    cost=IMG_COST;
+  } else if(formType==="动图"){
+    shots=[bestShot(all)];
+    cost=CLIP_COST;
+  } else {
+    shots=all.slice();
+    if(curMode==="甲"){ shots=[bestShot(all)]; }
+    const n=shots.length;
+    cost = curMode==="甲" ? `${COST_MIN}–${COST_MAX} 积分（单镜 5 秒）` : `${COST_MIN*n}–${COST_MAX*n} 积分（${n} 段 ×5 秒）`;
+  }
+
+  if(formType==="视频"){
+    $("#budget").innerHTML =
+      `<div class="chip">模式 <b>${curMode}</b></div>`+
+      `<div class="chip">识别镜头 <b>${shots.length}</b></div>`+
+      `<div class="chip">视频预算 <b>${cost}</b></div>`+
+      `<div class="chip">朗诵 <b>0 积分</b>（免费 TTS）</div>`;
+  } else {
+    $("#budget").innerHTML =
+      `<div class="chip">形态 <b>${formType}</b></div>`+
+      `<div class="chip">${formType}预算 <b>${cost}</b></div>`+
+      `<div class="chip">朗诵 <b>0 积分</b>（图片/动图无朗诵）</div>`;
+  }
+
+  $("#shots").innerHTML = shots.map((s,i)=>{
+    const tag = formType==="视频" ? (`镜头 ${i+1}${curMode==="甲"?" · 镇楼最炸":""}`) : (`${formType} ${i+1}`);
+    return `<div class="shot"><h3>${tag}</h3>`+
+      `<div class="line">${s.line}</div>`+
+      `<div class="anchor">${s.anchor||""}</div>`+
+      `<code>${s.prompt}</code></div>`;
+  }).join("");
+
+  $("#narrText").value=data.narr;
+  if(formType==="图片") $("#handoff").innerHTML=`下一步：复制上方 prompt 交球球（ImageGen）出单张高清意境图，约 5–10 积分。`;
+  else if(formType==="动图") $("#handoff").innerHTML=`下一步：复制上方 prompt 交球球（VideoGen）出 5 秒单镜动图，约 50–100 积分。`;
+  else $("#handoff").innerHTML = curMode==="甲"
+    ? `下一步：复制上方镜头 prompt 交球球（VideoGen）生成 5 秒视频即成镇楼炸图；如需朗诵，球球用云端音色混音出 MP4。`
+    : `下一步：将以上 ${shots.length} 段 prompt 交球球（VideoGen）各生成 5 秒视频，ffmpeg concat 拼成 ${shots.length*5} 秒成片；朗诵由球球用云端音色混音。本页 prompt 可直接导出任务单。`;
+
+  $("#result").classList.remove("hidden");
+  window._shots=shots; window._mode=curMode; window._formType=formType;
+}
+
+// 朗诵（浏览器原生）
+let utter=null;
+$("#play").onclick=()=>{
+  const txt=$("#narrText").value.trim(); if(!txt||!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  utter=new SpeechSynthesisUtterance(txt); utter.lang="zh-CN"; utter.rate=.92; utter.pitch=1;
+  const v=window.speechSynthesis.getVoices().find(x=>x.lang&&x.lang.startsWith("zh")); if(v) utter.voice=v;
+  window.speechSynthesis.speak(utter);
+};
+$("#stop").onclick=()=>window.speechSynthesis&&window.speechSynthesis.cancel();
+
+// 导出任务单
+$("#export").onclick=()=>{
+  if(!window._shots) return;
+  const shots=window._shots, mode=window._mode, n=shots.length, ft=window._formType||"视频";
+  let cost, head;
+  if(ft==="图片"){ cost=IMG_COST; head="图片"; }
+  else if(ft==="动图"){ cost=CLIP_COST; head="动图"; }
+  else { cost = mode==="甲"?`${COST_MIN}–${COST_MAX} 积分`:`${COST_MIN*n}–${COST_MAX*n} 积分`; head=mode+" 模式"; }
+  let md=`# 诗词${head} Prompt · 球球·心象 生成\n\n> 预算：${cost} ｜ 朗诵：0 积分（免费 TTS，仅视频含）\n\n`;
+  shots.forEach((s,i)=>{ md+=`## ${ft==="视频"?("镜头 "+(i+1)):(head+(i+1))}（原句：${s.line}）\n\`\`\`\n${s.prompt}\n\`\`\`\n\n`; });
+  if(ft==="视频"&&mode==="乙") md+=`## 合成\n将 ${n} 段各 5 秒视频 ffmpeg concat 拼成 ${n*5} 秒；朗诵 ffmpeg 混音。\n`;
+  md+=`\n---\n*本任务单由「球球·心象」生成*\n`;
+  const blob=new Blob([md],{type:"text/markdown"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`prompts_${mode}_${Date.now()}.md`; a.click();
+};
+
+// 初始化
+if(window.speechSynthesis) window.speechSynthesis.getVoices();
+fillPresets(); presetSel.value=Object.keys(PRESETS)[0];
+freeText.value=PRESETS[presetSel.value].text; usePreset=true; setMode("乙"); setForm("视频");
+$("#gen").onclick=render;
+</script>
+</body>
+</html>
